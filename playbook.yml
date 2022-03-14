@@ -1,0 +1,10 @@
+---
+- hosts: estudos2
+  become: true
+  roles:
+    - maneo.common
+    - maneo.php
+    - maneo.nginx
+    - maneo.mysql
+    - maneo.wordpress
+   

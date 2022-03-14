@@ -1,0 +1,36 @@
+---
+- name: Instalando o MariaDB
+  apt: name={{item}} state=present
+  with_items:
+    - mariadb-server
+    - mariadb-client
+    - python3-mysqldb
+    - python3-mysqldb-dbg
+  
+- name: Gerando um novo root password
+  command: openssl rand -hex 7 creates=/root/.my.cnf
+  register: mysql_new_root_pass
+
+- name: Removendo usuários anonimo
+  mysql_user: name="" state=absent
+
+- name: Removendo banco de dados de testes
+  mysql_db: name=test state=absent
+
+- name: Upando a senha de root
+  mysql_user: name=root host={{item}} password{{mysql_new_root_pass.stdout}}
+  with_items:
+          - "{{ ansible_hostname }}"
+          - 127.0.0.1
+          - ::1
+          - localhost
+
+- name: Mostrando a nova senha de root
+  ansible.builtin.debug:
+          msg:
+            - " A nova senha do root é {{mysql_new_root_pass.stdout}}"   
+
+- name: Criando o my.cnf
+  template: src=templates/my.cnf dest=/root/.my.cnf
+
+# tasks file for maneo.mysql

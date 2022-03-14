@@ -1,0 +1,4 @@
+---
+# handlers file for maneo.nginx
+- name: Reiniciando o Nginx
+  service: name=nginx state=restarted

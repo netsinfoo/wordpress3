@@ -1,0 +1,22 @@
+---
+- name: Instalar o Php
+    apt:  name={{item}} state=present
+    with_items:
+      - php7.4  
+      - php7.4-fpm                          
+      - php7.4-mysql                          
+      - php7.4-common                          
+      - php7.4-cli
+      - php-common  
+      - php7.4-json                          
+      - php7.4-opcache                          
+      - php7.4-readline                          
+      - php7.4-mbstring                          
+      - php7.4-xml                          
+      - php7.4-gd                          
+      - php7.4-curl                      
+          
+- name: Removendo o apache2
+  apt: name=apache2 state=absent   
+
+# tasks file for maneo.php

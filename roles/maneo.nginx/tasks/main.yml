@@ -1,0 +1,20 @@
+---
+- name: Instalando o ngnix
+  apt: name=nginx state=present force=yes update_cache=yes
+
+- name: Iniciando nginx
+  service: name=nginx state=started
+
+- name: Removendo o arquivo de configurção padrão
+  file: path=/etc/nginx/sites-enabled/default state=absent
+
+- name: Removendo o index padrão
+  file: path=/var/www/html/{{item}} state=absent
+  with_items:
+          - index.html  
+          - index.nginx-debian.html
+            
+- name: Criando configuração do Nginx
+  template: src=templates/default dest=/etc/nginx/sites-available/estudo
+  notify: Reiniciando o Nginx
+# tasks file for maneo.nginx
