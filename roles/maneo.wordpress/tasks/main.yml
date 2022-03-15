@@ -23,30 +23,43 @@
           creates: /tmp/wordpress/wp-settings.php
 
 - name: Criando pasta do projeto
-  file: dest=/var/www/html/estudo  state=directory
+  file: dest=/var/www/html/{{wp_domain}}  state=directory
 
 - name: Criando site-avaliable estudo
-  file: dest=/etc/nginx/sites-enabled/estudo state=absent
+  file: dest=/etc/nginx/sites-enabled/{{wp_domain}} state=absent
 
 - name: Criando links
-  command: ln -s /etc/nginx/sites-available/estudo /etc/nginx/sites-enabled/
+  command: ln -s /etc/nginx/sites-available/{{wp_domain}} /etc/nginx/sites-enabled/
 
 - name: Copiando arquivos para o diretorio wordpress
-  command: cp -a /tmp/wordpress/. /var/www/html/estudo creates=/var/www/html/estudo/wp-settings.php
+  command: cp -a /tmp/wordpress/. /var/www/html/{{wp_domain}} creates=/var/www/html/{{wp_domain}}/wp-settings.php
 
 - name: Criando a base de dados wordpress
-  mysql_db: name=wordpress state=present
+  mysql_db: name={{database_name}} state=present
 
 - name: Criando o usuário wordpress
-  mysql_user: name=wordpress host={{item}} password=Sti@2022 priv=wordpress.*:ALL
+  mysql_user: name={{database_user}} host={{item}} password={{database_password}} priv={{database_name}}.*:ALL
   with_items:
           - "{{ ansible_hostname }}"
           - 127.0.0.1
           - ::1
           - localhost
   
+- name: Banco de dados existe?
+  command: mysql - u root {{database_name}} -e "SELECT ID FROM {{database_name}}.wp_users LIMIT 1;"
+  register: db_exist
+  ignore_errors: true
+  changed_when: false
+
+- name: Copiando banco de dados wordpress
+  template: src=wp-database.sql dest=/tmp/wp-database.sql
+  when: db_exist.rc > 0
+
+- name: Importando banco de dados wordpress
+  mysql_db: target=/tmp/wp-database.sql state=import name="{{database_name}}"
+  when: db_exist.rc == 1  
 
 - name: Criando a configuração wp-config
-  template: src=templates/wp-config.php dest=/var/www/html/estudo/wp-config.php
+  template: src=templates/wp-config.php dest=/var/www/html/{{wp_domain}}/wp-config.php
 
 # tasks file for maneo.wordpress

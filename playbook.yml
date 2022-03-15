@@ -7,4 +7,10 @@
     - maneo.nginx
     - maneo.mysql
     - maneo.wordpress
+      database_name: wordpress    
+      database_user: wordpress    
+      database_password: Sti@2022
+      wp_domain: estudo.teste.local
+      initial_post_title: Ei
+      initial_post_contente: > Este é um exemplo de um post. Troque o texto se achar insteressante.
    

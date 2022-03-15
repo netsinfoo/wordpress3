@@ -1,9 +1,9 @@
 server {
 listen 80;
 listen [::]:80;
-root /var/www/html/estudo;
+root /var/www/html/{{wp_domain}};
 index index.php index.html index.htm;
-server_name example.com www.example.com;
+server_name {{wp_domain}};
 
 client_max_body_size 100M;
 
